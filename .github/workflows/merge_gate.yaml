@@ -1,0 +1,25 @@
+name: merge-gate
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: debian-latest
+    container:
+      image: medamb/bb-common-utils:latest
+      volumes:
+        - ${{github.workspace}}:${{github.workspace}}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: format-check
+      run: ${{github.workspace}}/scripts/format-checker.sh
+
+    - name: lint-check
+      run: ${{github.workspace}}/scripts/lint-checker.sh
+
+    - name: build
+      run: cmake -B ${{github.workspace}}/build && cmake --build ${{github.workspace}}/build
